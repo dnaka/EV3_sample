@@ -134,7 +134,7 @@ class LineTraceCar():
 if __name__ == "__main__":
   car = LineTraceCar()
 
-	# ライントレース開始
+  # ライントレース開始
   car.trace()
   # 駐車する
   car.garageIn()
