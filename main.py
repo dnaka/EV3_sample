@@ -16,6 +16,7 @@ from color import RGBColor
 leftMotor = Motor(Port.C)
 rightMotor = Motor(Port.B)
 colorSensor = ColorSensor(Port.S3)
+sonicSensor = UltrasonicSensor(Port.S4)
 
 class LineTraceCar():
   """
@@ -28,14 +29,19 @@ class LineTraceCar():
   MIDDLE_SPEED_DEG_S = 100
   LOW_SPEED_DEG_S= 60
 
+  BLOCK_DISTANCE_MM = 200
+
+  def isDetectObject(self, distance, threshold = 10):
+    """引数distanceから前後thresholdの距離で何か発見したらTrueを返す """
+    dist = sonicSensor.distance()
+    if (distance - threshold) <= dist and dist <= (distance + threshold):
+      return True
+
+    return False
+
   def trace(self):
     # RGBColorクラスの初期化
     rgbColor = RGBColor()
-
-    # 停止位置の色を取得。
-    (r, g, b) = colorSensor.rgb()
-    garageColor = rgbColor.parseRGB(r, g, b)
-
     self.__initMotor()
 
     # ラインをトレースして走る
@@ -51,13 +57,12 @@ class LineTraceCar():
       elif gotColor is Color.WHITE: # 白
         # 左回転
       	self.__run(self.LOW_SPEED_DEG_S, self.HIGH_SPEED_DEG_S)
-
-      elif gotColor is not garageColor:
-        # 駐車位置以外なら右回転
+      else:
+        # 白以外のその他の色も右回転
       	self.__run(self.HIGH_SPEED_DEG_S, self.LOW_SPEED_DEG_S)
-      
-      elif gotColor is garageColor: 
-        # 駐車位置を感知したらbreak
+
+      if self.isDetectObject(self.BLOCK_DISTANCE_MM):
+        # 指定範囲内に障害物を検知したらbreak
         break
     # end of while
 
@@ -67,13 +72,13 @@ class LineTraceCar():
     rightMotor.stop()
     print("trace MotorStop")
 
-  def garageIn():
+  def garageIn(self):
     """
     車庫入れの実施
     """
     # 少し直進
     self.__initMotor()
-    while Motor.B.angle() < 400:
+    while leftMotor.angle() < 400:
     	self.__run(self.MIDDLE_SPEED_DEG_S, self.MIDDLE_SPEED_DEG_S)
 
     # 90度超信地旋回
@@ -82,7 +87,7 @@ class LineTraceCar():
     # 後進して止める
     self.__initMotor()
     while rightMotor.angle() > -500:
-    	self.__run(-BACK_SPEED_DEG_S, -BACK_SPEED_DEG_S)
+    	self.__run(-self.BACK_SPEED_DEG_S, -self.BACK_SPEED_DEG_S)
 
     leftMotor.brake()
     rightMotor.brake()
@@ -121,11 +126,11 @@ class LineTraceCar():
       # 厳密には、turnDegはモーターの回転角度で車体の角度ではないが、左右がそれぞれ90度回転する＝片方がタイヤ半回転相当のはず。
       # タイヤ半回転で大体90度横を向く、という計算の上での処理になっている。
       while rightMotor.angle() < turnDeg * 2:
-      	self.__run(-MIDDLE_SPEED_DEG_S, MIDDLE_SPEED_DEG_S)
+      	self.__run(-self.MIDDLE_SPEED_DEG_S, self.MIDDLE_SPEED_DEG_S)
 
     else:
       while leftMotor.angle() < turnDeg * 2:
-      	self.__run(MIDDLE_SPEED_DEG_S, -MIDDLE_SPEED_DEG_S)
+      	self.__run(self.MIDDLE_SPEED_DEG_S, -self.MIDDLE_SPEED_DEG_S)
 
     # TODO: 要検証だが以下のような書き方でもいいかも
     #leftMotor.run_angle(-MIDDLE_SPEED_DEG_S, -turnDeg * 2, Stop.HOLD, False）

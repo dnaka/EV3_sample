@@ -12,10 +12,24 @@
 			"interactiveTerminal": false
 		},
 		{
+			"name": "Download and Run2",
+			"type": "ev3devBrowser",
+			"request": "launch",
+			"program": "/home/robot/${workspaceRootFolderName}/main2.py",
+			"interactiveTerminal": false
+		},
+		{
 			"name": "Download and Test Color Run",
 			"type": "ev3devBrowser",
 			"request": "launch",
-			"program": "/home/robot/${workspaceRootFolderName}/test.py",
+			"program": "/home/robot/${workspaceRootFolderName}/testColor.py",
+			"interactiveTerminal": false
+		},
+		{
+			"name": "Download and Test Sonic Run",
+			"type": "ev3devBrowser",
+			"request": "launch",
+			"program": "/home/robot/${workspaceRootFolderName}/testSonic.py",
 			"interactiveTerminal": false
 		},
 		{
