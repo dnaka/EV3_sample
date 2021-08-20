@@ -33,10 +33,24 @@
 			"interactiveTerminal": false
 		},
 		{
-			"name": "Download and Test RGBColor Run",
+			"name": "Download and Test Motor Run",
 			"type": "ev3devBrowser",
 			"request": "launch",
-			"program": "/home/robot/${workspaceRootFolderName}/color.py",
+			"program": "/home/robot/${workspaceRootFolderName}/testMotor.py",
+			"interactiveTerminal": false
+		},
+		{
+			"name": "Download and motor.py Run",
+			"type": "ev3devBrowser",
+			"request": "launch",
+			"program": "/home/robot/${workspaceRootFolderName}/answer_exsample/motor.py",
+			"interactiveTerminal": false
+		},
+		{
+			"name": "Download and Test color.py Run",
+			"type": "ev3devBrowser",
+			"request": "launch",
+			"program": "/home/robot/${workspaceRootFolderName}/answer_exsample/color.py",
 			"interactiveTerminal": false
 		}
 	]

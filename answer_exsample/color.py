@@ -2,7 +2,7 @@
 from pybricks.hubs import EV3Brick
 from pybricks.ev3devices import ColorSensor
 from pybricks.parameters import Port, Color
-from pybricks.tools import wait, 
+from pybricks.tools import wait
 
 class RGBColor():
   """
@@ -54,7 +54,6 @@ class RGBColor():
 
 if __name__ == "__main__":
   ev3 = EV3Brick()
-  colorSensor = ColorSensor(Port.S3)
   rgbColor = RGBColor()
 
   while True:
@@ -79,3 +78,4 @@ if __name__ == "__main__":
       ev3.screen.draw_text(0, 0, "UNKNOWN")
 
     wait(1000)
+  # end of while

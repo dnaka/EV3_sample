@@ -15,7 +15,6 @@ from color import RGBColor
 # EV3の固有デバイス初期化
 leftMotor = Motor(Port.C)
 rightMotor = Motor(Port.B)
-colorSensor = ColorSensor(Port.S3)
 sonicSensor = UltrasonicSensor(Port.S4)
 
 class LineTraceCar():
@@ -47,8 +46,7 @@ class LineTraceCar():
     # ラインをトレースして走る
     while True:
       # 色の取得と判定
-      (r, g, b) = colorSensor.rgb()
-      gotColor = rgbColor.parseRGB(r, g, b)
+      gotColor = rgbColor.getColor()
 
       if gotColor is Color.BLACK: # 黒
       	# 右回転
