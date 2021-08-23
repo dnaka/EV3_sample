@@ -10,7 +10,7 @@ rightMotor = Motor(Port.B)
 
 def calcDegree(run_distance_cm):
   """走行距離を入力すると、必要な角度を計算する"""
-  # 走行距離yは y = 5.5(cm タイヤ直径) * 3.14 * deg / 360 で計算できるので、これを変形してdegを計算する
+  # 走行距離yは y = 5.6(cm タイヤ直径) * 3.14 * deg / 360 で計算できるので、これを変形してdegを計算する
   return run_distance_cm * 20.85
 
 def run_init():

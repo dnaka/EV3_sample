@@ -9,15 +9,16 @@ class RGBColor():
   RGBカラーを取り扱うクラス。定数とメソッドのみで状態は持たない。
   Colorクラスだとpybricksのクラス名とかぶるのでRGBColorにしている。
   """
-  THRESHOLD = 2
+  THRESHOLD = 4
 
   # 各色の基準値。RGBの反射値がこれらの+-THRESHOLD以内なら、その色として扱う。単位は%
-  BASE_RED = [24, 4.8, 3]
-  BASE_BLUE = [3, 3, 6]
-  BASE_YELLOW = [24, 19, 3]
-  BASE_BLACK = [1.2, 1.2, 0.6]
-  BASE_GRAY = [11, 13, 8]
-  BASE_GREEN = [4, 11, 2]
+  BASE_RED = [60, 7, 7]
+  BASE_BLUE = [6, 9, 27]
+  BASE_YELLOW = [55, 55, 10]
+  BASE_BLACK = [3, 3, 1]
+  BASE_GRAY = [28, 30, 33]
+  BASE_GREEN = [10, 28, 6]
+  BASE_WHITE = [66, 66, 83]
 
   def __init__(self):
     """Constructor"""
@@ -37,20 +38,20 @@ class RGBColor():
     センサーの取得したRGB値を具体的な色に変換する
     """
     (red, green, blue) = self.colorSensor.rgb()
-    if self.__parse(self.BASE_RED, red, green, blue):
+    if self.__parse(self.BASE_WHITE, red, green, blue):
+      return Color.WHITE
+    elif self.__parse(self.BASE_RED, red, green, blue):
       return Color.RED
     elif self.__parse(self.BASE_BLUE, red, green, blue):
       return Color.BLUE
     elif self.__parse(self.BASE_YELLOW, red, green, blue):
       return Color.YELLOW
-    elif self.__parse(self.BASE_BLACK, red, green, blue):
-      return Color.BLACK
-    elif self.__parse(self.BASE_GRAY, red, green, blue):
-      return Color.BROWN # 本当はグレーなのだが、なぜかColor.GRAYがエラーになるので代用
     elif self.__parse(self.BASE_GREEN, red, green, blue):
       return Color.GREEN
+    elif self.__parse(self.BASE_GRAY, red, green, blue):
+      return Color.BROWN # 本当はグレーなのだが、なぜかColor.GRAYがエラーになるので代用
     else:
-      return Color.WHITE
+      return Color.BLACK
 
 if __name__ == "__main__":
   ev3 = EV3Brick()

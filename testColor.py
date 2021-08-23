@@ -11,7 +11,7 @@ colorSensor = ColorSensor(Port.S3)
 ev3 = EV3Brick()
 
 # ログファイル指定
-data = DataLog('R', 'G', 'B', append=True)
+#data = DataLog('R', 'G', 'B', append=True)
 
 while True:
   (r, g, b) = colorSensor.rgb()
@@ -19,5 +19,5 @@ while True:
   message = "R:" + str(r) + " G:" + str(g) + " B:" + str(b) 
   ev3.screen.draw_text(0, 0, message)
 
-  data.log(r, g, b)
+  #data.log(r, g, b)
   wait(1000)

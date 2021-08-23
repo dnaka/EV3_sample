@@ -23,49 +23,51 @@ class LineTraceCar():
   """
   # タイヤの速度。ターンする時は片方をLOW、もう片方をHIGHにすると曲がる。単位は角度/s (deg/s)
   # TODO: タイヤの円周を測定してマクロにし、角度 * タイヤ円周で移動距離を計算できると、もう少し制御しやすそう
-  BACK_SPEED_DEG_S = 300
-  HIGH_SPEED_DEG_S = 200
-  MIDDLE_SPEED_DEG_S = 100
-  LOW_SPEED_DEG_S= 60
 
-  BLOCK_DISTANCE_MM = 200
+  SPEED = [120, 60]
 
-  def isDetectObject(self, distance, threshold = 10):
-    """引数distanceから前後thresholdの距離で何か発見したらTrueを返す """
-    dist = sonicSensor.distance()
-    if (distance - threshold) <= dist and dist <= (distance + threshold):
-      return True
-
-    return False
+  FLAG_NORMAL  = 0
+  FLAG_GREEN   = 1
 
   def trace(self):
     # RGBColorクラスの初期化
     rgbColor = RGBColor()
     self.__initMotor()
 
+    flag = self.FLAG_NORMAL
+
     # ラインをトレースして走る
     while True:
       # 色の取得と判定
       gotColor = rgbColor.getColor()
 
-      if gotColor is Color.BLACK: # 黒
-      	# 右回転
-        self.__run(self.HIGH_SPEED_DEG_S, self.LOW_SPEED_DEG_S)
+      if gotColor is Color.BLACK:
+        if flag == self.FLAG_GREEN:
+          # 緑の後に黒を検出したら90°コーナーを曲がる
+          self.__turnLastCurve()
+          flag = self.FLAG_NORMAL
+
+        else:
+          # 右旋回
+          self.__run(self.SPEED[1], self.SPEED[0])
 
       elif gotColor is Color.WHITE: # 白
         # 左回転
-      	self.__run(self.LOW_SPEED_DEG_S, self.HIGH_SPEED_DEG_S)
+      	self.__run(self.SPEED[0], self.SPEED[1])
+
+      elif gotColor is Color.GREEN: # 緑
+        self.__run(self.SPEED[1], self.SPEED[0])
+        flag = self.FLAG_GREEN
+
+      elif gotColor is Color.YELLOW:
+        break
+
       else:
         # 白以外のその他の色も右回転
-      	self.__run(self.HIGH_SPEED_DEG_S, self.LOW_SPEED_DEG_S)
-
-      if self.isDetectObject(self.BLOCK_DISTANCE_MM):
-        # 指定範囲内に障害物を検知したらbreak
-        break
+      	self.__run(self.SPEED[1], self.SPEED[0])
     # end of while
 
     # モーターを停止
-    self.__initMotor()
     leftMotor.stop()
     rightMotor.stop()
     print("trace MotorStop")
@@ -76,19 +78,21 @@ class LineTraceCar():
     """
     # 少し直進
     self.__initMotor()
-    while leftMotor.angle() < 400:
-    	self.__run(self.MIDDLE_SPEED_DEG_S, self.MIDDLE_SPEED_DEG_S)
+    
+    speed = self.__calcDegree(10)
+    leftMotor.run_angle(speed, speed, wait=False)
+    rightMotor.run_angle(speed, speed, wait=True)
 
-    # 90度超信地旋回
-    self.__turn(90)
+    # 90度左旋回
+    self.turn(-90)
 
-    # 後進して止める
-    self.__initMotor()
-    while rightMotor.angle() > -500:
-    	self.__run(-self.BACK_SPEED_DEG_S, -self.BACK_SPEED_DEG_S)
+    # 20cm前進
+    speed = self.__calcDegree(20)
+    leftMotor.run_angle(speed / 3, speed, wait=False)
+    rightMotor.run_angle(speed / 3, speed, wait=True)
 
-    leftMotor.brake()
-    rightMotor.brake()
+    leftMotor.stop()
+    rightMotor.stop()
     print("garageIn() MotorStop")
 
   def __initMotor(self):
@@ -105,16 +109,46 @@ class LineTraceCar():
     """
     if l_motor_speed == 0:
       # TODO: hold()でもいいかも
-      leftMotor.brake()
+      leftMotor.stop()
     else:
       leftMotor.run(l_motor_speed)
 
     if r_motor_speed == 0:
-      rightMotor.brake()
+      rightMotor.stop()
     else:
       rightMotor.run(r_motor_speed)
 
-  def __turn(self, turnDeg):
+  def __turnLastCurve(self):
+    """緑から黒を検出したらよばれる関数"""
+    # 5cm直進
+    speed = self.__calcDegree(5)
+    leftMotor.run_angle(speed, speed, wait=False)
+    rightMotor.run_angle(speed, speed, wait=True)
+
+    self.turn(90)
+
+  def __calcDegree(self, run_distance_cm):
+    """走行距離を入力すると、必要な角度を計算する"""
+    # 走行距離yは y = 5.6(cm タイヤ直径) * 3.14 * deg / 360 で計算できるので、これを変形してdegを計算する
+    return run_distance_cm * 20.47
+
+  def turn(self, deg):
+    # 1sで指定された角度だけ信地旋回するために必要な速度
+    # 機体のトレッド=回転半径が約10cmなので、20 * 3.14 * deg / 360がタイヤの移動距離。
+    # これに走行距離yを計算する式y = 5.6(cm タイヤ直径) * 3.14 * deg_s / 360 を適用すると、20/5.6 * deg
+    speed = 3.6 * deg
+
+    if deg > 0:
+      # +なら右旋回＝左モーターを回す
+      leftMotor.run_angle(speed, speed, wait=True)
+      rightMotor.hold()
+
+    else:
+      # -なら左旋回＝右モーターを回す degが負値なので−する
+      leftMotor.hold()
+      rightMotor.run_angle(-speed, -speed, wait=True)
+
+  def __turnX(self, turnDeg):
     """
     超信地旋回させる。turnDeg > 0なら左旋回（反時計回り), turnDeg < 0なら右旋回(時計回り)
     """
@@ -136,7 +170,6 @@ class LineTraceCar():
 
 if __name__ == "__main__":
   car = LineTraceCar()
-
   # ライントレース開始
   car.trace()
   # 駐車する
