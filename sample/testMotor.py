@@ -5,6 +5,8 @@ from pybricks.ev3devices import Motor
 from pybricks.parameters import Port
 from pybricks.tools import wait
 
+"""モーター制御の確認コード"""
+
 SPEED_DEG_S = 360 # 単位は角速度(一秒間にタイヤが何°回転するか)
 
 leftMotor = Motor(Port.C)

@@ -5,6 +5,8 @@ from pybricks.ev3devices import UltrasonicSensor
 from pybricks.parameters import Port, Stop, Direction, Button, Color
 from pybricks.tools import wait, StopWatch, DataLog
 
+"""超音波センサーの確認コード"""
+
 sonicSensor = UltrasonicSensor(Port.S4)
 ev3 = EV3Brick()
 

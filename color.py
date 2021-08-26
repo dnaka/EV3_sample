@@ -42,14 +42,14 @@ class RGBColor():
       return Color.BLACK
     elif self.__parse(self.BASE_RED, red, green, blue):
       return Color.RED
-    elif self.__parse(self.BASE_BLUE, red, green, blue):
-      return Color.BLUE
     elif self.__parse(self.BASE_YELLOW, red, green, blue):
       return Color.YELLOW
     elif self.__parse(self.BASE_GREEN, red, green, blue):
       return Color.GREEN
     elif self.__parse(self.BASE_GRAY, red, green, blue):
       return Color.BROWN
+    elif self.__parse(self.BASE_BLUE, red, green, blue):
+      return Color.BLUE
     else:
       return Color.WHITE
 

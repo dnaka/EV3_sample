@@ -84,7 +84,7 @@ class LineTraceCar():
     rightMotor.run_angle(speed, speed, wait=True)
 
     # 90度左旋回
-    self.turn(-90)
+    self.__turn(-90)
 
     # 20cm前進
     speed = self.__calcDegree(20)
@@ -125,14 +125,14 @@ class LineTraceCar():
     leftMotor.run_angle(speed, speed, wait=False)
     rightMotor.run_angle(speed, speed, wait=True)
 
-    self.turn(90)
+    self.__turn(90)
 
   def __calcDegree(self, run_distance_cm):
     """走行距離を入力すると、必要な角度を計算する"""
     # 走行距離yは y = 5.6(cm タイヤ直径) * 3.14 * deg / 360 で計算できるので、これを変形してdegを計算する
     return run_distance_cm * 20.47
 
-  def turn(self, deg):
+  def __turn(self, deg):
     # 1sで指定された角度だけ信地旋回するために必要な速度
     # 機体のトレッド=回転半径が約10cmなので、20 * 3.14 * deg / 360がタイヤの移動距離。
     # これに走行距離yを計算する式y = 5.6(cm タイヤ直径) * 3.14 * deg_s / 360 を適用すると、20/5.6 * deg
@@ -147,26 +147,6 @@ class LineTraceCar():
       # -なら左旋回＝右モーターを回す degが負値なので−する
       leftMotor.hold()
       rightMotor.run_angle(-speed, -speed, wait=True)
-
-  def __turnX(self, turnDeg):
-    """
-    超信地旋回させる。turnDeg > 0なら左旋回（反時計回り), turnDeg < 0なら右旋回(時計回り)
-    """
-    self.__initMotor()
-
-    if turnDeg > 0:
-      # 厳密には、turnDegはモーターの回転角度で車体の角度ではないが、左右がそれぞれ90度回転する＝片方がタイヤ半回転相当のはず。
-      # タイヤ半回転で大体90度横を向く、という計算の上での処理になっている。
-      while rightMotor.angle() < turnDeg * 2:
-      	self.__run(-self.MIDDLE_SPEED_DEG_S, self.MIDDLE_SPEED_DEG_S)
-
-    else:
-      while leftMotor.angle() < turnDeg * 2:
-      	self.__run(self.MIDDLE_SPEED_DEG_S, -self.MIDDLE_SPEED_DEG_S)
-
-    # TODO: 要検証だが以下のような書き方でもいいかも
-    #leftMotor.run_angle(-MIDDLE_SPEED_DEG_S, -turnDeg * 2, Stop.HOLD, False）
-    #rightMotor.run_angle(MIDDLE_SPEED_DEG_S, turnDeg * 2, Stop.HOLD, True）
 
 if __name__ == "__main__":
   car = LineTraceCar()
